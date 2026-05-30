@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/jrme421/Documents/hangman C++/Hangman-CPP/output/main'
+relocations:     []
+...

@@ -2,6 +2,7 @@
 #include <ctime>
 #include <string>
 #include <iterator>
+#include <vector>
 
 using namespace std;
 
@@ -15,12 +16,41 @@ using namespace std;
 */
 
 int main(){
-    char guessLetter;
+    string userInput;
+    string hint;
+    string answer;
+    bool winning = false;
+    int numberOfguessesMade = 0;
+    vector<char> vectorAnswer;
+    vector<char>::iterator iteratorAnswer;
+
+    srand(static_cast<unsigned int>(time(0)));
+    string answersWithHintsArray[][2]={{"safari", "you go there to see animals"}, {"restaurant","you go there to eat"}, {"cinema","you get to see movies there"}, {"family","you're supposed to count on them"}, {"supermarket","you buy food there"}};
+    const int nbOfAnswers = sizeof(answersWithHintsArray) / sizeof(answersWithHintsArray[0]);
+    const int randomNumber = rand() % nbOfAnswers;
+    answer = answersWithHintsArray[randomNumber][0];
+    hint = answersWithHintsArray[randomNumber][1];
+    const int answerSize = answer.size();
+
+    cout << "answer size: " << answerSize << endl;
+    cout << "answer: " << answer << endl;
+    cout << "hint" << hint << endl;
+
+    for (int i = answerSize; i < answerSize; ++i)
+      {
+      vectorAnswer.push_back(answer[i]);
+          cout << vectorAnswer[i] <<endl;
+    }
 
     cout << "Welcome to Hangman. Good Luck!\n";
+    cout << "Enter quit to quit the game\n";
 
-    cout << "Enter your guess: ";
-    cin >> guessLetter;
 
+    do {
+        cout << "Enter your guess: ";
+        cin >> userInput;
+    }while (userInput != "quit" || numberOfguessesMade > 7 || winning != true);
+
+    cout << "thank you for playing";
     return 0;
 }
