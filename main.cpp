@@ -3,6 +3,8 @@
 #include <string>
 #include <iterator>
 #include <vector>
+#include <algorithm>
+#include <cctype>
 
 using namespace std;
 
@@ -19,11 +21,15 @@ int main(){
     string userInput;
     string hint;
     string answer;
-    bool winning = false;
-    int numberOfguessesMade = 0;
+    char guess;
+    int numberOfTries = 0;
+    const int numberOfLives = 8;
     vector<char> vectorAnswer;
+    vector<char> vectorEmptyAnswer;
+    vector<char> vectorLettersTyped;
     vector<char>::iterator iteratorAnswer;
-
+    vector<char>::iterator iteratorEmptyAnswer;
+    vector<char>::iterator iteratorLettersTyped;
     srand(static_cast<unsigned int>(time(0)));
     string answersWithHintsArray[][2]={{"safari", "you go there to see animals"}, {"restaurant","you go there to eat"}, {"cinema","you get to see movies there"}, {"family","you're supposed to count on them"}, {"supermarket","you buy food there"}};
     const int nbOfAnswers = sizeof(answersWithHintsArray) / sizeof(answersWithHintsArray[0]);
@@ -31,26 +37,77 @@ int main(){
     answer = answersWithHintsArray[randomNumber][0];
     hint = answersWithHintsArray[randomNumber][1];
     const int answerSize = answer.size();
-
-    cout << "answer size: " << answerSize << endl;
-    cout << "answer: " << answer << endl;
-    cout << "hint" << hint << endl;
-
-    for (int i = answerSize; i < answerSize; ++i)
-      {
+    int remainingLetters = answerSize;
+    for (int i = 0; i < answerSize; ++i)
+    {
+      vectorEmptyAnswer.push_back('_');
       vectorAnswer.push_back(answer[i]);
-          cout << vectorAnswer[i] <<endl;
     }
 
     cout << "Welcome to Hangman. Good Luck!\n";
-    cout << "Enter quit to quit the game\n";
-
-
+    cout << "Enter quit to quit the game and hint to see the hint\n";
+    
     do {
-        cout << "Enter your guess: ";
+        cout << "\nYou have " << (numberOfLives-numberOfTries) << " guesses left";
+        cout << "\nword so far: ";
+        
+        for (iteratorAnswer = vectorEmptyAnswer.begin();iteratorAnswer != vectorEmptyAnswer.end();++iteratorAnswer)
+        {
+               cout << *iteratorAnswer;
+        }
+        cout << endl << "\nEnter your guess: " << endl;
         cin >> userInput;
-    }while (userInput != "quit" || numberOfguessesMade > 7 || winning != true);
+        if (userInput.size() == 1 && isalpha(static_cast<unsigned char>(userInput[0])))
+        {
+            guess = tolower(userInput[0]);
+            iteratorAnswer = find(vectorAnswer.begin(), vectorAnswer.end(),guess);
+            iteratorEmptyAnswer = find(vectorEmptyAnswer.begin(), vectorEmptyAnswer.end(),guess);
+            iteratorLettersTyped = find(vectorLettersTyped.begin(), vectorLettersTyped.end(),guess);
+            if(iteratorEmptyAnswer != vectorEmptyAnswer.end())
+            {
+                cout << "\nYou have already guessed: " << guess;
+            }  
+            else if(iteratorLettersTyped != vectorLettersTyped.end() && iteratorEmptyAnswer == vectorEmptyAnswer.end())
+            {
+                cout << "\nYou have already typed: " << guess;
+            } 
+            else if (iteratorAnswer != vectorAnswer.end())
+            {
+                for (int i = 0; i < answerSize; ++i)
+                {   
+                    if (guess == answer[i])
+                    {
+                        vectorEmptyAnswer[i] = answer[i];
+                        --remainingLetters;
+                    }
+                }  
+            }         
+            else
+            {
+                ++numberOfTries;
+                vectorLettersTyped.push_back(guess);
+            }
+        }
+        else if (userInput == "hint")
+        {
+            cout << hint;
+        }
+        else
+        {
+            ++numberOfTries;
+            cout << "Please type a valid input";
+        }
+    }while ((userInput != "quit") && (numberOfTries < numberOfLives) && (remainingLetters > 0));
 
-    cout << "thank you for playing";
+    if(remainingLetters == 0)
+    {
+        cout << "\nWell done the word was indeed: " << answer;
+    }
+    else
+    {
+        cout << "GAME OVER";
+    }
+    
+    cout << "\nThank you for playing";
     return 0;
 }
